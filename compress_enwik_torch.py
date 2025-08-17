@@ -10,7 +10,19 @@ import data_loaders
 import utils
 import arithmetic_coder
 
-from train_enwik_torch import TransformerConfig, TransformerDecoder
+from transformer_torch import TransformerConfig, TransformerDecoder
+
+import argparse
+
+parser = argparse.ArgumentParser(description='Compress enwik9 data using Transformer Decoder.')
+
+parser.add_argument('-m', '--model_path', type=str, default='params.pth', help='模型参数文件的路径')
+parser.add_argument('-n', '--num_chunks', type=int, default=1000, help='处理的数据块数量')
+parser.add_argument('--use_slow_lossless_compression', action='store_true', default=False, help='是否使用慢速无损压缩')
+parser.add_argument('--use_tqdm', action='store_true', default=False, help='是否使用 tqdm 进度条')
+
+args = parser.parse_args()
+print(args)
 
 def predict_fn(model, tokenized_data_batch):
     # Set model to evaluation mode
@@ -111,10 +123,11 @@ def llm_decompress(model, compressed_data, num_padded_bits, model_seq_len = cons
 
 if __name__ == '__main__':
     # Load model
-    model = load_model('params.pth')
-    use_slow_lossless_compression = True
-    use_tqdm = True
-    num_chunks = 1
+    model = load_model(args.model_path)
+    
+    use_slow_lossless_compression = args.use_slow_lossless_compression
+    use_tqdm = args.use_tqdm
+    num_chunks = args.num_chunks
 
     # Prepare data to be compressed
     enwik9_data_generator = data_loaders.get_enwik9_iterator(
