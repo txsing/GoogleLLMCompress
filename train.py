@@ -196,6 +196,9 @@ def train_transformer_decoder(
 def main(_) -> None:
   """Trains a language model and saves the parameters to a JSON file."""
   params, loss = train_transformer_decoder(
+      # Replicate the compression rate of the Transformer 200K model, i.e., 30.9, 
+      # by training for the same amount of steps (i.e., 1 million steps instead of 100)
+      # ref. https://github.com/google-deepmind/language_modeling_is_compression/issues/4
       training_steps=100,
       log_every=10,
       sequence_length=constants.CHUNK_SIZE_BYTES,
